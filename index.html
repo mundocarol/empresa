@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0f172a">
-    <title>DAVID × LALIN - Placar Vôlei</title>
+    <title>DAVID × LALIN - Placar por Diálogo</title>
     <style>
         * {
             margin: 0;
@@ -35,8 +35,8 @@
         body {
             display: flex;
             flex-direction: column;
-            padding: 6px 10px;
-            gap: 3px;
+            padding: 8px 12px;
+            gap: 4px;
             background: radial-gradient(ellipse at center, #1a2332 0%, #0a0f1a 100%);
         }
 
@@ -97,7 +97,6 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-shadow: none;
         }
 
         .time .pontos {
@@ -209,8 +208,8 @@
             text-align: center;
             font-size: clamp(0.55rem, 1.3vw, 0.8rem);
             color: #cbd5e1;
-            min-height: 1.6rem;
-            padding: 4px 12px;
+            min-height: 1.8rem;
+            padding: 6px 12px;
             flex-shrink: 0;
             display: flex;
             align-items: center;
@@ -220,6 +219,7 @@
             border-radius: 10px;
             backdrop-filter: blur(4px);
             border: 1px solid rgba(255, 255, 255, 0.03);
+            flex-wrap: wrap;
         }
 
         .status .indicador {
@@ -251,12 +251,6 @@
             background: #fbbf24;
             animation: pisca-amarelo 0.3s infinite;
             box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
-        }
-
-        .status .indicador.som {
-            background: #8b5cf6;
-            animation: pisca-roxo 0.5s infinite;
-            box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
         }
 
         @keyframes pisca-verde {
@@ -292,16 +286,31 @@
                 transform: scale(1.2);
             }
         }
-        @keyframes pisca-roxo {
-            0%,
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.3;
-                transform: scale(1.1);
-            }
+
+        /* ===== DIÁLOGO ===== */
+        .dialogo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 8px;
+            padding: 4px 12px;
+            min-height: 28px;
+        }
+
+        .dialogo .fala-usuario {
+            color: #60a5fa;
+            font-weight: 600;
+        }
+
+        .dialogo .fala-sistema {
+            color: #fbbf24;
+            font-weight: 600;
+        }
+
+        .dialogo .separador {
+            color: #475569;
         }
 
         /* ===== BOTÕES PRINCIPAIS ===== */
@@ -337,7 +346,7 @@
         #btnVoz {
             background: linear-gradient(135deg, #22c55e, #16a34a);
             color: white;
-            min-width: 160px;
+            min-width: 170px;
             position: relative;
         }
 
@@ -363,6 +372,16 @@
             }
             50% {
                 opacity: 0.2;
+            }
+        }
+
+        @keyframes pulse-vermelho {
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 30px 8px rgba(239, 68, 68, 0.2);
             }
         }
 
@@ -411,7 +430,7 @@
                 min-width: 60px;
             }
             #btnVoz {
-                min-width: 100px;
+                min-width: 110px;
             }
             #btnFull {
                 min-width: 70px;
@@ -423,8 +442,13 @@
             }
             .status {
                 font-size: 0.55rem;
-                min-height: 1.4rem;
+                min-height: 1.6rem;
+                padding: 4px 8px;
+            }
+            .dialogo {
+                font-size: 0.6rem;
                 padding: 2px 8px;
+                min-height: 24px;
             }
         }
 
@@ -477,51 +501,6 @@
             width: 0;
             height: 0;
         }
-
-        /* ===== INDICADOR DE SOM ===== */
-        .som-indicador {
-            display: inline-flex;
-            gap: 2px;
-            align-items: center;
-            height: 16px;
-            margin-left: 4px;
-        }
-
-        .som-indicador .barra {
-            width: 3px;
-            height: 100%;
-            background: #8b5cf6;
-            border-radius: 2px;
-            animation: onda-som 0.6s ease-in-out infinite alternate;
-        }
-
-        .som-indicador .barra:nth-child(2) {
-            animation-delay: 0.1s;
-        }
-        .som-indicador .barra:nth-child(3) {
-            animation-delay: 0.2s;
-        }
-        .som-indicador .barra:nth-child(4) {
-            animation-delay: 0.3s;
-        }
-        .som-indicador .barra:nth-child(5) {
-            animation-delay: 0.4s;
-        }
-
-        .som-indicador.parado .barra {
-            opacity: 0.2;
-            animation: none;
-            transform: scaleY(0.3);
-        }
-
-        @keyframes onda-som {
-            0% {
-                transform: scaleY(0.3);
-            }
-            100% {
-                transform: scaleY(1);
-            }
-        }
     </style>
 </head>
 <body>
@@ -555,17 +534,14 @@
         </div>
     </div>
 
-    <!-- STATUS -->
+    <!-- STATUS COM DIÁLOGO -->
     <div class="status" id="status">
         <span class="indicador inativo" id="indicadorStatus"></span>
-        <span id="statusTexto">🎯 Toque em COMEÇAR para ativar o microfone</span>
-        <span class="som-indicador parado" id="somIndicador">
-            <span class="barra"></span>
-            <span class="barra"></span>
-            <span class="barra"></span>
-            <span class="barra"></span>
-            <span class="barra"></span>
-        </span>
+        <div class="dialogo" id="dialogo">
+            <span class="fala-sistema" id="falaSistema">🎯 Aguardando comando...</span>
+            <span class="separador" id="separadorDialogo"></span>
+            <span class="fala-usuario" id="falaUsuario"></span>
+        </div>
     </div>
 
     <!-- BOTÕES -->
@@ -587,13 +563,10 @@
             // CONFIGURAÇÕES
             // ============================================
             const CONFIG = {
-                PALAVRA_ATIVADORA: 'judite',
                 PONTOS_VITORIA: 15,
-                TIMEOUT_RECONHECIMENTO: 200,
-                MAX_TENTATIVAS_RECONHECIMENTO: 999,
-                FREQUENCIA_SOM: 60, // Frequência do som de manutenção (Hz)
-                VOLUME_SOM: 0.02, // Volume bem baixo (2%)
-                INTERVALO_SOM: 1500, // A cada 1.5s
+                TIMEOUT_RECONHECIMENTO: 500,
+                TEMPO_ESPERA_RESPOSTA: 5000, // 5 segundos para responder
+                MAX_TENTATIVAS: 10,
             };
 
             // ============================================
@@ -607,7 +580,13 @@
                 jogoEncerrado: false,
                 ouvindo: false,
                 tentativasReconhecimento: 0,
-                somAtivo: false,
+
+                // ESTADO DO DIÁLOGO
+                dialogo: {
+                    aguardando: 'comando', // 'comando' | 'time' | 'corrigir-time'
+                    comandoAtual: null, // 'ponto' | 'corrigir' | 'novo' | 'zerar'
+                    timeoutId: null,
+                }
             };
 
             // ============================================
@@ -622,7 +601,9 @@
                 tagL: document.getElementById('tagL'),
                 statusTexto: document.getElementById('statusTexto'),
                 indicadorStatus: document.getElementById('indicadorStatus'),
-                somIndicador: document.getElementById('somIndicador'),
+                falaSistema: document.getElementById('falaSistema'),
+                falaUsuario: document.getElementById('falaUsuario'),
+                separadorDialogo: document.getElementById('separadorDialogo'),
                 btnVoz: document.getElementById('btnVoz'),
                 btnFull: document.getElementById('btnFull'),
                 btnNovo: document.getElementById('btnNovo'),
@@ -632,99 +613,26 @@
             };
 
             // ============================================
-            // ÁUDIO DE MANUTENÇÃO (som que mantém o microfone ativo)
+            // SÍNTESE DE VOZ (TTS)
             // ============================================
-            let contextoAudio = null;
-            let oscilador = null;
-            let ganho = null;
-            let intervaloManutencao = null;
-            let somAtivo = false;
-
-            function iniciarSomManutencao() {
+            function falar(texto, callback) {
                 try {
-                    // Cria contexto de áudio
-                    contextoAudio = new(window.AudioContext || window.webkitAudioContext)();
+                    const utterance = new SpeechSynthesisUtterance(texto);
+                    utterance.lang = 'pt-BR';
+                    utterance.rate = 0.9;
+                    utterance.pitch = 1;
+                    utterance.volume = 1;
 
-                    if (contextoAudio.state === 'suspended') {
-                        contextoAudio.resume();
+                    if (callback) {
+                        utterance.onend = callback;
                     }
 
-                    // Cria oscilador de baixa frequência (quase inaudível)
-                    oscilador = contextoAudio.createOscillator();
-                    ganho = contextoAudio.createGain();
-
-                    oscilador.type = 'sine';
-                    oscilador.frequency.value = CONFIG.FREQUENCIA_SOM;
-                    ganho.gain.value = CONFIG.VOLUME_SOM;
-
-                    oscilador.connect(ganho);
-                    ganho.connect(contextoAudio.destination);
-
-                    oscilador.start();
-
-                    // Marca como ativo
-                    somAtivo = true;
-                    estado.somAtivo = true;
-
-                    // Mostra indicador visual
-                    DOM.somIndicador.classList.remove('parado');
-                    setStatus('🔊 Som de manutenção ativo - microfone mantido!', 'som');
-
-                    // Mantém o oscilador "vivo" mudando a frequência levemente
-                    intervaloManutencao = setInterval(() => {
-                        if (oscilador && somAtivo) {
-                            // Muda a frequência levemente para manter o contexto ativo
-                            const variacao = (Math.random() - 0.5) * 2;
-                            oscilador.frequency.value = CONFIG.FREQUENCIA_SOM + variacao;
-
-                            // Se o contexto for suspenso, resume
-                            if (contextoAudio && contextoAudio.state === 'suspended') {
-                                contextoAudio.resume();
-                            }
-                        }
-                    }, CONFIG.INTERVALO_SOM);
-
-                    console.log('✅ Som de manutenção ativo! Frequência:', CONFIG.FREQUENCIA_SOM, 'Hz');
-
+                    window.speechSynthesis.speak(utterance);
+                    return true;
                 } catch (e) {
-                    console.warn('⚠️ Erro ao iniciar som de manutenção:', e);
-                    setStatus('⚠️ Falha no som de manutenção', 'erro');
+                    console.warn('Erro na síntese de voz:', e);
+                    return false;
                 }
-            }
-
-            function pararSomManutencao() {
-                somAtivo = false;
-                estado.somAtivo = false;
-
-                if (intervaloManutencao) {
-                    clearInterval(intervaloManutencao);
-                    intervaloManutencao = null;
-                }
-
-                if (oscilador) {
-                    try {
-                        oscilador.stop();
-                        oscilador.disconnect();
-                    } catch (e) {}
-                    oscilador = null;
-                }
-
-                if (ganho) {
-                    try {
-                        ganho.disconnect();
-                    } catch (e) {}
-                    ganho = null;
-                }
-
-                if (contextoAudio) {
-                    try {
-                        contextoAudio.close();
-                    } catch (e) {}
-                    contextoAudio = null;
-                }
-
-                DOM.somIndicador.classList.add('parado');
-                console.log('⏹️ Som de manutenção desativado');
             }
 
             // ============================================
@@ -754,7 +662,7 @@
                 DOM.tagL.textContent = estado.modoVantagem ? '⚡ VANTAGEM' : '';
             }
 
-            function setStatus(mensagem, tipo = 'info') {
+            function setStatus(mensagem, tipo = 'info', falarMensagem = true) {
                 DOM.statusTexto.textContent = mensagem;
                 const indicador = DOM.indicadorStatus;
                 indicador.className = 'indicador';
@@ -765,11 +673,31 @@
                     indicador.classList.add('processando');
                 } else if (tipo === 'erro') {
                     indicador.classList.add('erro');
-                } else if (tipo === 'som') {
-                    indicador.classList.add('som');
                 } else {
                     indicador.classList.add('inativo');
                 }
+
+                // Se for mensagem do sistema, mostra no diálogo
+                if (tipo !== 'usuario') {
+                    DOM.falaSistema.textContent = mensagem;
+                    DOM.falaUsuario.textContent = '';
+                    DOM.separadorDialogo.textContent = '';
+                }
+            }
+
+            function setFalaSistema(mensagem, falarVoz = true) {
+                DOM.falaSistema.textContent = mensagem;
+                DOM.falaUsuario.textContent = '';
+                DOM.separadorDialogo.textContent = '';
+
+                if (falarVoz) {
+                    falar(mensagem);
+                }
+            }
+
+            function setFalaUsuario(mensagem) {
+                DOM.falaUsuario.textContent = mensagem;
+                DOM.separadorDialogo.textContent = '🗣️';
             }
 
             function toggleGanhador(time) {
@@ -797,7 +725,7 @@
             // ============================================
             function somarPonto(time, origem = 'voz') {
                 if (estado.jogoEncerrado) {
-                    showToast('🏆 Jogo encerrado! Clique em NOVO JOGO');
+                    setFalaSistema('🏆 Jogo encerrado! Clique em NOVO JOGO');
                     return false;
                 }
 
@@ -813,8 +741,7 @@
                     if (estado.vantagem.D === 1 && estado.vantagem.L === 1) {
                         estado.vantagem.D = 0;
                         estado.vantagem.L = 0;
-                        setStatus('⚖️ Empate na vantagem! Zera...', 'processando');
-                        showToast('⚖️ Empate! Vantagem zerada');
+                        setFalaSistema('⚖️ Empate na vantagem! Zera...');
                     }
                 } else {
                     estado.pontos[time]++;
@@ -829,8 +756,7 @@
                         estado.modoVantagem = true;
                         estado.vantagem.D = 0;
                         estado.vantagem.L = 0;
-                        setStatus('⚖️ 14x14! Modo vantagem ativado!', 'processando');
-                        showToast('⚖️ 14x14! Modo vantagem!');
+                        setFalaSistema('⚖️ 14x14! Modo vantagem ativado!');
                     }
                 }
 
@@ -838,33 +764,38 @@
                 atualizarBotoesManuais();
 
                 if (origem === 'voz') {
-                    showToast(`✅ ${time === 'D' ? 'DAVID' : 'LALIN'} marcou!`);
+                    const nome = time === 'D' ? 'DAVID' : 'LALIN';
+                    setFalaSistema(`✅ Ponto ${nome} confirmado!`);
+                    showToast(`✅ ${nome} marcou!`);
                 }
                 return true;
             }
 
             function corrigirPonto(time) {
                 if (estado.jogoEncerrado) {
-                    showToast('🏆 Jogo encerrado!');
+                    setFalaSistema('🏆 Jogo encerrado!');
                     return;
                 }
 
+                let removido = false;
                 if (estado.modoVantagem) {
                     if (estado.vantagem[time] > 0) {
                         estado.vantagem[time]--;
-                        showToast(`✏️ -1 ${time === 'D' ? 'David' : 'Lalin'}`);
-                    } else {
-                        showToast('⚠️ Sem pontos para corrigir');
-                        return;
+                        removido = true;
                     }
                 } else {
                     if (estado.pontos[time] > 0) {
                         estado.pontos[time]--;
-                        showToast(`✏️ -1 ${time === 'D' ? 'David' : 'Lalin'}`);
-                    } else {
-                        showToast('⚠️ Sem pontos para corrigir');
-                        return;
+                        removido = true;
                     }
+                }
+
+                if (removido) {
+                    const nome = time === 'D' ? 'DAVID' : 'LALIN';
+                    setFalaSistema(`✏️ Ponto ${nome} cancelado!`);
+                    showToast(`✏️ -1 ${nome}`);
+                } else {
+                    setFalaSistema(`⚠️ Não há pontos para cancelar`);
                 }
 
                 atualizarTela();
@@ -875,15 +806,15 @@
                 estado.jogoEncerrado = true;
                 estado.vitorias[time]++;
                 const nome = time === 'D' ? 'DAVID' : 'LALIN';
-                setStatus(`🏆 ${nome} VENCEU!`, 'erro');
+                setFalaSistema(`🏆 ${nome} VENCEU o jogo!`);
                 showToast(`🏆 ${nome} VENCEU!`, 3000);
                 toggleGanhador(time);
                 atualizarTela();
                 atualizarBotoesManuais();
 
-                // Para o som de manutenção
+                // Para o reconhecimento
                 if (estado.ouvindo) {
-                    pararSomManutencao();
+                    pararEscuta();
                 }
             }
 
@@ -893,26 +824,26 @@
                 estado.modoVantagem = false;
                 estado.jogoEncerrado = false;
                 estado.tentativasReconhecimento = 0;
+                estado.dialogo.aguardando = 'comando';
+                estado.dialogo.comandoAtual = null;
 
                 DOM.ptsD.classList.remove('ganhador');
                 DOM.ptsL.classList.remove('ganhador');
 
-                setStatus('🔄 Novo jogo!', 'info');
+                setFalaSistema('🔄 Novo jogo iniciado!');
                 showToast('🔄 Novo jogo!');
                 atualizarTela();
                 atualizarBotoesManuais();
 
                 // Reinicia escuta se ativa
                 if (estado.ouvindo) {
-                    pararSomManutencao();
                     setTimeout(() => {
-                        iniciarSomManutencao();
-                        if (reconhecimento) {
+                        if (reconhecimento && estado.ouvindo) {
                             try {
                                 reconhecimento.start();
                             } catch (e) {}
                         }
-                    }, 300);
+                    }, 500);
                 }
             }
 
@@ -923,94 +854,139 @@
                 estado.modoVantagem = false;
                 estado.jogoEncerrado = false;
                 estado.tentativasReconhecimento = 0;
+                estado.dialogo.aguardando = 'comando';
+                estado.dialogo.comandoAtual = null;
 
                 DOM.ptsD.classList.remove('ganhador');
                 DOM.ptsL.classList.remove('ganhador');
 
-                setStatus('♻️ Tudo zerado!', 'info');
+                setFalaSistema('♻️ Tudo zerado!');
                 showToast('♻️ Estatísticas zeradas!');
                 atualizarTela();
                 atualizarBotoesManuais();
 
                 if (estado.ouvindo) {
-                    pararSomManutencao();
                     setTimeout(() => {
-                        iniciarSomManutencao();
-                        if (reconhecimento) {
+                        if (reconhecimento && estado.ouvindo) {
                             try {
                                 reconhecimento.start();
                             } catch (e) {}
                         }
-                    }, 300);
+                    }, 500);
                 }
             }
 
             // ============================================
-            // COMANDOS DE VOZ
+            // GERENCIADOR DE DIÁLOGO
             // ============================================
-            function processarComandoVoz(texto) {
-                const fala = texto.toLowerCase().trim();
-
-                console.log('[VOZ] Processando:', fala);
-
-                // Verifica palavra ativadora
-                if (!fala.includes(CONFIG.PALAVRA_ATIVADORA)) {
-                    setStatus('🔇 Aguardando "Judite"...', 'inativo');
-                    return;
+            function reiniciarDialogo() {
+                estado.dialogo.aguardando = 'comando';
+                estado.dialogo.comandoAtual = null;
+                if (estado.dialogo.timeoutId) {
+                    clearTimeout(estado.dialogo.timeoutId);
+                    estado.dialogo.timeoutId = null;
                 }
+                setFalaSistema('🎯 Fale "Judite" para começar');
+            }
 
+            function iniciarTimeoutResposta() {
+                if (estado.dialogo.timeoutId) {
+                    clearTimeout(estado.dialogo.timeoutId);
+                }
+                estado.dialogo.timeoutId = setTimeout(() => {
+                    setFalaSistema('⏰ Tempo esgotado. Diga "Judite" para começar novamente');
+                    estado.dialogo.aguardando = 'comando';
+                    estado.dialogo.comandoAtual = null;
+                }, CONFIG.TEMPO_ESPERA_RESPOSTA);
+            }
+
+            function processarDialogo(comando) {
+                const texto = comando.toLowerCase().trim();
+
+                console.log('[DIÁLOGO] Processando:', texto, '| Estado:', estado.dialogo.aguardando);
+
+                // Verifica se o jogo está encerrado
                 if (estado.jogoEncerrado) {
-                    setStatus('🏆 Jogo encerrado!', 'erro');
-                    showToast('🏆 Jogo encerrado!');
+                    setFalaSistema('🏆 Jogo encerrado! Diga "Novo jogo" para reiniciar');
                     return;
                 }
 
-                // Detecção de comandos
-                const temDavid = fala.includes('david') || fala.includes('davi');
-                const temLalin = fala.includes('lalin') || fala.includes('lalim') || fala.includes('lalyn');
-                const temCorrigir = fala.includes('corrigir') || fala.includes('corrige') || fala.includes('tirar');
-                const temNovo = fala.includes('novo') || fala.includes('reiniciar') || fala.includes('reset');
-                const temZerar = fala.includes('zerar') && fala.includes('tudo');
-
-                // COMANDO: ZERAR TUDO
-                if (temZerar) {
-                    resetarTudo();
-                    setStatus('♻️ Zerado tudo por voz!', 'processando');
-                    return;
-                }
-
-                // COMANDO: NOVO JOGO
-                if (temNovo) {
-                    resetarJogo();
-                    setStatus('🔄 Novo jogo por voz!', 'processando');
-                    return;
-                }
-
-                // COMANDO: CORRIGIR
-                if (temCorrigir) {
-                    if (temDavid) {
-                        corrigirPonto('D');
-                        setStatus('✏️ Corrigido: David', 'processando');
-                    } else if (temLalin) {
-                        corrigirPonto('L');
-                        setStatus('✏️ Corrigido: Lalin', 'processando');
-                    } else {
-                        setStatus('⚠️ Corrigir: especifique David ou Lalin', 'erro');
-                        showToast('⚠️ Fale: Judite corrigir David');
+                // ============================================
+                // ESTADO: AGUARDANDO COMANDO PRINCIPAL
+                // ============================================
+                if (estado.dialogo.aguardando === 'comando') {
+                    // Comando: JUDITE
+                    if (texto.includes('judite') || texto.includes('judith')) {
+                        estado.dialogo.aguardando = 'time';
+                        estado.dialogo.comandoAtual = 'ponto';
+                        setFalaSistema('🗣️ Ponto de quem? David ou Lalin?');
+                        iniciarTimeoutResposta();
+                        return;
                     }
-                    return;
+
+                    // Comando: CORRIGIR / CANCELAR
+                    if (texto.includes('corrigir') || texto.includes('cancelar') || texto.includes('tirar')) {
+                        estado.dialogo.aguardando = 'time';
+                        estado.dialogo.comandoAtual = 'corrigir';
+                        setFalaSistema('🗣️ Cancelar ponto de quem? David ou Lalin?');
+                        iniciarTimeoutResposta();
+                        return;
+                    }
+
+                    // Comando: NOVO JOGO
+                    if (texto.includes('novo') || texto.includes('reiniciar') || texto.includes('reset')) {
+                        resetarJogo();
+                        return;
+                    }
+
+                    // Comando: ZERAR TUDO
+                    if (texto.includes('zerar') && texto.includes('tudo')) {
+                        resetarTudo();
+                        return;
+                    }
+
+                    // Comando: Ajuda
+                    if (texto.includes('ajuda') || texto.includes('como') || texto.includes('o que')) {
+                        setFalaSistema('🎯 Diga: Judite, Corrigir, Novo jogo ou Zerar tudo');
+                        return;
+                    }
+
+                    // Qualquer outra coisa
+                    setFalaSistema('❓ Não entendi. Diga "Judite" para marcar ponto, "Corrigir" para cancelar');
                 }
 
-                // COMANDO: PONTOS
-                if (temDavid) {
-                    somarPonto('D', 'voz');
-                    setStatus('✅ Ponto para DAVID!', 'processando');
-                } else if (temLalin) {
-                    somarPonto('L', 'voz');
-                    setStatus('✅ Ponto para LALIN!', 'processando');
-                } else {
-                    setStatus('⚠️ Fale: Judite ponto David ou Lalin', 'erro');
-                    showToast('⚠️ Comando não reconhecido');
+                // ============================================
+                // ESTADO: AGUARDANDO TIME (David ou Lalin)
+                // ============================================
+                else if (estado.dialogo.aguardando === 'time') {
+                    // Limpa timeout
+                    if (estado.dialogo.timeoutId) {
+                        clearTimeout(estado.dialogo.timeoutId);
+                        estado.dialogo.timeoutId = null;
+                    }
+
+                    let time = null;
+                    if (texto.includes('david') || texto.includes('davi')) {
+                        time = 'D';
+                    } else if (texto.includes('lalin') || texto.includes('lalim') || texto.includes('lalyn')) {
+                        time = 'L';
+                    } else {
+                        setFalaSistema('❌ Não entendi. Fale David ou Lalin');
+                        estado.dialogo.aguardando = 'time';
+                        iniciarTimeoutResposta();
+                        return;
+                    }
+
+                    // Executa o comando
+                    if (estado.dialogo.comandoAtual === 'ponto') {
+                        somarPonto(time, 'voz');
+                    } else if (estado.dialogo.comandoAtual === 'corrigir') {
+                        corrigirPonto(time);
+                    }
+
+                    // Volta ao estado inicial
+                    estado.dialogo.aguardando = 'comando';
+                    estado.dialogo.comandoAtual = null;
                 }
             }
 
@@ -1036,19 +1012,16 @@
                         criarReconhecimento();
                     }
 
-                    // Primeiro ativa o som de manutenção
-                    if (!estado.somAtivo) {
-                        iniciarSomManutencao();
-                    }
-
-                    // Depois inicia o reconhecimento
                     reconhecimento.start();
                     estado.ouvindo = true;
                     estado.tentativasReconhecimento = 0;
                     DOM.btnVoz.textContent = '🔇 PARAR';
                     DOM.btnVoz.classList.add('parando');
-                    setStatus('👂 Ouvindo... Fale: Judite ponto David/Lalin', 'ativo');
+                    setFalaSistema('🎤 Microfone ativado! Fale "Judite" para começar');
                     showToast('🎤 Microfone ativado!');
+
+                    // Inicia WakeLock para manter tela ligada
+                    iniciarWakeLock();
 
                 } catch (e) {
                     console.error('Erro ao iniciar:', e);
@@ -1071,14 +1044,14 @@
                     console.warn('Erro ao parar:', e);
                 }
 
-                // Para o som de manutenção
-                pararSomManutencao();
-
                 estado.ouvindo = false;
                 DOM.btnVoz.textContent = '🎙️ COMEÇAR';
                 DOM.btnVoz.classList.remove('parando');
                 setStatus('⏹️ Microfone desativado', 'inativo');
                 showToast('⏹️ Microfone desativado');
+
+                // Libera WakeLock
+                liberarWakeLock();
             }
 
             function toggleEscuta() {
@@ -1100,7 +1073,6 @@
 
                 reconhecimento.onstart = () => {
                     estado.ouvindo = true;
-                    estado.tentativasReconhecimento = 0;
                     DOM.btnVoz.textContent = '🔇 PARAR';
                     DOM.btnVoz.classList.add('parando');
                     setStatus('👂 Ouvindo...', 'ativo');
@@ -1111,11 +1083,17 @@
                         const resultado = event.results[i];
                         const transcricao = resultado[0].transcript;
 
+                        // Mostra o que o usuário falou
+                        DOM.falaUsuario.textContent = transcricao;
+                        DOM.separadorDialogo.textContent = '🗣️';
+
                         if (resultado.isFinal) {
-                            processarComandoVoz(transcricao);
-                        } else {
-                            // Resultado parcial - mostra que está processando
-                            setStatus(`🗣️ Processando: "${transcricao}"`, 'processando');
+                            processarDialogo(transcricao);
+                            // Limpa a fala do usuário após processar
+                            setTimeout(() => {
+                                DOM.falaUsuario.textContent = '';
+                                DOM.separadorDialogo.textContent = '';
+                            }, 2000);
                         }
                     }
                 };
@@ -1124,22 +1102,27 @@
                     console.warn('[VOZ] Erro:', event.error);
 
                     if (event.error === 'not-allowed' || event.error === 'denied') {
-                        setStatus('❌ Microfone bloqueado!', 'erro');
+                        setFalaSistema('❌ Microfone bloqueado! Permita o acesso');
                         showToast('❌ Permita o microfone');
                         pararEscuta();
                         return;
                     }
 
                     if (event.error === 'no-speech') {
-                        setStatus('🔇 Aguardando fala...', 'inativo');
+                        // Não faz nada, só aguarda
                         return;
                     }
 
                     // Reinicia para outros erros
                     if (estado.ouvindo && !estado.jogoEncerrado) {
                         estado.tentativasReconhecimento++;
+                        if (estado.tentativasReconhecimento > CONFIG.MAX_TENTATIVAS) {
+                            setFalaSistema('⚠️ Muitas falhas. Toque em COMEÇAR novamente');
+                            pararEscuta();
+                            return;
+                        }
                         setTimeout(() => {
-                            if (estado.ouvindo) {
+                            if (estado.ouvindo && reconhecimento) {
                                 try {
                                     reconhecimento.start();
                                 } catch (e) {
@@ -1151,10 +1134,9 @@
                 };
 
                 reconhecimento.onend = () => {
-                    // Se ainda deve estar ouvindo e tem som ativo, reinicia
-                    if (estado.ouvindo && !estado.jogoEncerrado && estado.somAtivo) {
+                    if (estado.ouvindo && !estado.jogoEncerrado) {
                         setTimeout(() => {
-                            if (estado.ouvindo && estado.somAtivo) {
+                            if (estado.ouvindo && reconhecimento) {
                                 try {
                                     reconhecimento.start();
                                 } catch (e) {
@@ -1162,12 +1144,36 @@
                                 }
                             }
                         }, CONFIG.TIMEOUT_RECONHECIMENTO);
-                    } else if (!estado.ouvindo) {
-                        DOM.btnVoz.textContent = '🎙️ COMEÇAR';
-                        DOM.btnVoz.classList.remove('parando');
-                        setStatus('⏹️ Microfone desativado', 'inativo');
                     }
                 };
+            }
+
+            // ============================================
+            // WAKE LOCK - Mantém tela ligada
+            // ============================================
+            let wakeLock = null;
+
+            async function iniciarWakeLock() {
+                try {
+                    if ('wakeLock' in navigator) {
+                        wakeLock = await navigator.wakeLock.request('screen');
+                        console.log('💡 WakeLock ativado - tela mantida ligada');
+                    }
+                } catch (e) {
+                    console.warn('⚠️ WakeLock não suportado:', e);
+                }
+            }
+
+            function liberarWakeLock() {
+                if (wakeLock) {
+                    try {
+                        wakeLock.release();
+                        wakeLock = null;
+                        console.log('💡 WakeLock liberado');
+                    } catch (e) {
+                        console.warn('Erro ao liberar WakeLock:', e);
+                    }
+                }
             }
 
             // ============================================
@@ -1238,7 +1244,7 @@
                     DOM.btnVoz.disabled = true;
                 } else {
                     criarReconhecimento();
-                    setStatus('🎯 Pronto! Toque em COMEÇAR', 'inativo');
+                    setFalaSistema('🎯 Pronto! Toque em COMEÇAR e fale "Judite"');
                 }
 
                 atualizarTela();
@@ -1252,10 +1258,27 @@
                 // Tenta fullscreen automaticamente
                 setTimeout(ativarFullscreen, 1000);
 
-                console.log('🏐 Placar DAVID × LALIN iniciado!');
-                console.log('🔊 Som de manutenção ativado ao clicar em COMEÇAR');
-                console.log('📢 Comandos: "Judite ponto David", "Judite ponto Lalin"');
-                console.log('   "Judite corrigir David", "Judite novo jogo"');
+                // Reconecta se perder foco
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden && estado.ouvindo) {
+                        // Se perdeu foco, tenta reconectar
+                        setTimeout(() => {
+                            if (estado.ouvindo && reconhecimento) {
+                                try {
+                                    reconhecimento.start();
+                                } catch (e) {}
+                            }
+                        }, 1000);
+                    }
+                });
+
+                console.log('🏐 Placar DAVID × LALIN - Modo Diálogo');
+                console.log('📢 Como usar:');
+                console.log('   1. Diga "Judite" → sistema pergunta "Ponto de quem?"');
+                console.log('   2. Diga "David" ou "Lalin" → sistema confirma');
+                console.log('   3. Diga "Corrigir" → sistema pergunta "Cancelar de quem?"');
+                console.log('   4. Diga "Novo jogo" → reinicia');
+                console.log('   5. Diga "Zerar tudo" → zera todas as estatísticas');
             }
 
             if (document.readyState === 'loading') {
@@ -1273,8 +1296,7 @@
                 resetarTudo: resetarTudo,
                 somarPonto: somarPonto,
                 corrigirPonto: corrigirPonto,
-                iniciarSomManutencao: iniciarSomManutencao,
-                pararSomManutencao: pararSomManutencao,
+                falar: falar,
             };
 
         })();
