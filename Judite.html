@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="screen-orientation" content="landscape">
+    <title>DAVID × LALIN</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+        html, body { height: 100%; overflow: hidden; }
+        body { 
+            background: #0f172a; 
+            color: white; 
+            display: flex; 
+            flex-direction: column;
+            padding: 5px;
+        }
+
+        /* VITÓRIAS — BEM PEQUENINAS NO TOPO */
+        .topo { 
+            display: flex; 
+            justify-content: space-between; 
+            font-size: 0.85rem; 
+            color: #94a3b8; 
+            padding: 4px 15px;
+        }
+        .vit-num { color: #fbbf24; font-weight: bold; font-size: 1rem; }
+
+        /* PLACAR GIGANTE — OCUPA TUDO */
+        .placares { 
+            display: flex; 
+            justify-content: space-around; 
+            align-items: center;
+            flex: 1; 
+            padding: 5px;
+        }
+        .time { text-align: center; width: 48%; }
+        .nome { font-size: 1.8rem; font-weight: bold; margin-bottom: 5px; }
+        .pontos { 
+            font-size: 12rem; 
+            font-weight: 900; 
+            background: #1e293b; 
+            border-radius: 20px; 
+            padding: 10px;
+            transition: 0.2s;
+        }
+        .vantagem { font-size: 0.9rem; color: #fbbf24; height: 1.2rem; }
+
+        /* STATUS E BOTÃO */
+        .status { 
+            text-align: center; 
+            font-size: 1rem; 
+            color: #cbd5e1; 
+            height: 1.8rem;
+        }
+        .botoes { 
+            display: flex; 
+            justify-content: center; 
+            gap: 10px; 
+            padding: 5px;
+        }
+        button { 
+            padding: 10px 18px; 
+            font-size: 1rem; 
+            border: none; 
+            border-radius: 10px; 
+            cursor: pointer;
+            font-weight: bold;
+        }
+        #btnVoz { background: #22c55e; color: white; min-width: 180px; }
+        #btnVoz.parando { background: #ef4444; }
+        #btnNovo { background: #3b82f6; color: white; }
+        #btnZerar { background: #6366f1; color: white; }
+
+        /* ANIMAÇÃO QUANDO GANHA */
+        .ganhador { 
+            background: #fbbf24 !important; 
+            color: #000;
+            animation: brilho 0.5s ease-in-out infinite alternate;
+        }
+        @keyframes brilho { from{box-shadow:0 0 10px #fbbf24} to{box-shadow:0 0 30px #fbbf24} }
+    </style>
+</head>
+<body>
+
+    <!-- VITÓRIAS — BEM PEQUENINAS NO TOPO -->
+    <div class="topo">
+        DAVID: <span class="vit-num" id="vitD">0</span> vitórias
+        <span style="font-size:1.2rem; color:#64748b">JUDITE</span>
+        LALIN: <span class="vit-num" id="vitL">0</span> vitórias
+    </div>
+
+    <!-- PLACAR GIGANTE -->
+    <div class="placares">
+        <div class="time">
+            <div class="nome">DAVID</div>
+            <div class="pontos" id="ptsD">0</div>
+            <div class="vantagem" id="tagD"></div>
+        </div>
+        <div class="time">
+            <div class="nome">LALIN</div>
+            <div class="pontos" id="ptsL">0</div>
+            <div class="vantagem" id="tagL"></div>
+        </div>
+    </div>
+
+    <div class="status" id="status">⚠️ Toque em COMEÇAR e fale: Judite ponto David / Judite ponto Lalin</div>
+
+    <div class="botoes">
+        <button id="btnVoz">🎙️ COMEÇAR A OUVIR</button>
+        <button id="btnNovo">🔄 NOVO JOGO</button>
+        <button id="btnZerar">♻️ ZERAR TUDO</button>
+    </div>
+
+<script>
+// ⚙️ CONFIGURAÇÕES
+const PALAVRA_CODIGO = "judite";
+const PONTOS_VITORIA = 15;
+
+// PLACAR
+let ptsD = 0, ptsL = 0;
+let vitD = 0, vitL = 0;
+let modoVantagem = false;
+let vD = 0, vL = 0;
+let jogoEncerrado = false;
+let ouvindo = false;
+let reconhecimento;
+
+// ELEMENTOS
+const elPtsD = document.getElementById('ptsD');
+const elPtsL = document.getElementById('ptsL');
+const elVitD = document.getElementById('vitD');
+const elVitL = document.getElementById('vitL');
+const tagD = document.getElementById('tagD');
+const tagL = document.getElementById('tagL');
+const status = document.getElementById('status');
+const btnVoz = document.getElementById('btnVoz');
+const btnNovo = document.getElementById('btnNovo');
+const btnZerar = document.getElementById('btnZerar');
+
+// RECONHECIMENTO DE VOZ
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+if (!SpeechRecognition) {
+    status.textContent = "❌ Use o Google Chrome no celular!";
+    btnVoz.disabled = true;
+} else {
+    criarReconhecimento();
+    // BOTÃO ALTERNA OUVIR / PARAR
+    btnVoz.addEventListener('click', () => {
+        if (!ouvindo) {
+            reconhecimento.start();
+            ouvindo = true;
+            btnVoz.textContent = "🔇 PARAR DE OUVIR";
+            btnVoz.classList.add('parando');
+        } else {
+            reconhecimento.stop();
+            ouvindo = false;
+            btnVoz.textContent = "🎙️ COMEÇAR A OUVIR";
+            btnVoz.classList.remove('parando');
+            status.textContent = "⏹️ Parado. Toque para ouvir de novo.";
+        }
+    });
+    btnNovo.addEventListener('click', zerarPontos);
+    btnZerar.addEventListener('click', zerarTudo);
+}
+
+function criarReconhecimento() {
+    reconhecimento = new SpeechRecognition();
+    reconhecimento.lang = 'pt-BR';
+    reconhecimento.continuous = true;
+    reconhecimento.interimResults = false;
+
+    reconhecimento.onstart = () => {
+        status.textContent = "👂 OUVINDO... Fale: Judite ponto David / Judite ponto Lalin";
+    };
+
+    reconhecimento.onresult = (evento) => {
+        if (jogoEncerrado) {
+            status.textContent = "🏆 Jogo encerrado! Toque em NOVO JOGO";
+            return;
+        }
+
+        const fala = evento.results[0][0].transcript.toLowerCase().trim();
+        console.log("Ouvi:", fala);
+
+        // SEM PALAVRA CÓDIGO = IGNORA
+        if (!fala.includes(PALAVRA_CODIGO)) {
+            status.textContent = "🔇 Sem palavra código... ignorado.";
+            return;
+        }
+
+        // ✏️ CORRIGIR PONTO (tirar)
+        if (fala.includes('corrigir')) {
+            if (fala.includes('david')) {
+                if (modoVantagem) { if (vD>0) vD--; }
+                else { if (ptsD>0) ptsD--; }
+                status.textContent = "✏️ Ponto corrigido — tirou de David";
+            } else if (fala.includes('lalin')) {
+                if (modoVantagem) { if (vL>0) vL--; }
+                else { if (ptsL>0) ptsL--; }
+                status.textContent = "✏️ Ponto corrigido — tirou de Lalin";
+            }
+            atualizarTela();
+            return;
+        }
+
+        // 🏐 MARCAR PONTO
+        if (fala.includes('david')) {
+            somarPonto('D');
+            status.textContent = "✅ Ponto para DAVID!";
+        } else if (fala.includes('lalin')) {
+            somarPonto('L');
+            status.textContent = "✅ Ponto para LALIN!";
+        }
+
+        atualizarTela();
+    };
+
+    // 🔄 REINICIA SOZINHO SEMPRE — FICA ATIVO
+    reconhecimento.onend = () => {
+        if (ouvindo && !jogoEncerrado) {
+            status.textContent = "🔄 Ouvindo...";
+            setTimeout(() => reconhecimento.start(), 300);
+        }
+    };
+
+    reconhecimento.onerror = (erro) => {
+        if (ouvindo && !jogoEncerrado) {
+            setTimeout(() => reconhecimento.start(), 500);
+        }
+    };
+}
+
+// ➕ SOMAR PONTO E APLICAR REGRAS
+function somarPonto(time) {
+    if (modoVantagem) {
+        // --- MODO VANTAGEM (14x14) ---
+        if (time==='D') vD++; else vL++;
+
+        // ALCANÇOU DIFERENÇA DE 2 → GANHOU
+        if (Math.abs(vD - vL) >= 2 && (vD >= 2 || vL >= 2)) {
+            jogoEncerrado = true;
+            if (vD > vL) { vitD++; elPtsD.classList.add('ganhador'); }
+            else { vitL++; elPtsL.classList.add('ganhador'); }
+            status.textContent = "🏆 JOGO ENCERRADO! " + (vD>vL?"DAVID":"LALIN") + " VENCEU!";
+        }
+
+        // EMPATOU 1x1 → ZERA
+        if (vD === 1 && vL === 1) {
+            vD = 0; vL = 0;
+            status.textContent = "⚖️ Empate! Zera a vantagem...";
+        }
+    } else {
+        // --- JOGO NORMAL ---
+        if (time==='D') ptsD++; else ptsL++;
+
+        // CHEGOU A 15 COM DIFERENÇA DE 2 → GANHOU
+        if ((ptsD >= PONTOS_VITORIA || ptsL >= PONTOS_VITORIA) && Math.abs(ptsD - ptsL) >= 2) {
+            jogoEncerrado = true;
+            if (ptsD > ptsL) { vitD++; elPtsD.classList.add('ganhador'); }
+            else { vitL++; elPtsL.classList.add('ganhador'); }
+            status.textContent = "🏆 JOGO ENCERRADO! " + (ptsD>ptsL?"DAVID":"LALIN") + " VENCEU por " + ptsD + "x" + ptsL + "!";
+        }
+
+        // ⚖️ 14x14 → ENTRA NO MODO VANTAGEM
+        if (ptsD === 14 && ptsL === 14) {
+            modoVantagem = true;
+            vD = 0; vL = 0;
+            status.textContent = "⚖️ 14x14! Entra em vantagem — placar zerado!";
+        }
+    }
+}
+
+// 🖥️ ATUALIZAR TELA
+function atualizarTela() {
+    elPtsD.textContent = modoVantagem ? vD : ptsD;
+    elPtsL.textContent = modoVantagem ? vL : ptsL;
+    elVitD.textContent = vitD;
+    elVitL.textContent = vitL;
+    tagD.textContent = modoVantagem ? "(Vantagem)" : "";
+    tagL.textContent = modoVantagem ? "(Vantagem)" : "";
+}
+
+// 🔄 NOVO JOGO
+function zerarPontos() {
+    ptsD = ptsL = 0;
+    modoVantagem = false;
+    vD = vL = 0;
+    jogoEncerrado = false;
+    elPtsD.classList.remove('ganhador');
+    elPtsL.classList.remove('ganhador');
+    status.textContent = "🔄 Novo jogo! Continuo ouvindo...";
+    atualizarTela();
+}
+
+// ♻️ ZERA TUDO
+function zerarTudo() {
+    ptsD = ptsL = 0;
+    vitD = vitL = 0;
+    modoVantagem = false;
+    vD = vL = 0;
+    jogoEncerrado = false;
+    elPtsD.classList.remove('ganhador');
+    elPtsL.classList.remove('ganhador');
+    status.textContent = "♻️ ZERADO TUDO! Comece de novo...";
+    atualizarTela();
+}
+</script>
+</body>
+</html>
