@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="screen-orientation" content="landscape">
+    <title>DAVID × LALIN - Placar Vôlei</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+            background: #0f172a;
+            color: white;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            padding: 4px 8px;
+            gap: 2px;
+            height: 100vh;
+            height: 100dvh;
+            /* Dynamic viewport height */
+        }
+
+        /* ===== TOPO ===== */
+        .topo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: clamp(0.7rem, 2vw, 0.9rem);
+            color: #94a3b8;
+            padding: 2px 10px;
+            flex-shrink: 0;
+            min-height: 28px;
+        }
+
+        .vit-num {
+            color: #fbbf24;
+            font-weight: bold;
+            font-size: clamp(0.8rem, 2.2vw, 1rem);
+        }
+
+        .topo-titulo {
+            color: #64748b;
+            font-size: clamp(0.6rem, 1.5vw, 0.8rem);
+            letter-spacing: 2px;
+        }
+
+        /* ===== PLACAR GIGANTE ===== */
+        .placares {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex: 1;
+            min-height: 0;
+            gap: 4px;
+            padding: 2px;
+        }
+
+        .time {
+            text-align: center;
+            width: 48%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .time .nome {
+            font-size: clamp(1.2rem, 5vw, 2.2rem);
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .time .pontos {
+            font-size: clamp(6rem, 25vw, 12rem);
+            font-weight: 900;
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 4px 20px;
+            min-width: 120px;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+            position: relative;
+            line-height: 1;
+            width: 100%;
+            max-width: 280px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .time .pontos.ganhador {
+            background: #fbbf24 !important;
+            color: #0f172a;
+            animation: brilho 0.6s ease-in-out infinite alternate;
+        }
+
+        @keyframes brilho {
+            0% {
+                box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+            }
+            100% {
+                box-shadow: 0 0 40px rgba(251, 191, 36, 0.8);
+            }
+        }
+
+        .vantagem {
+            font-size: clamp(0.6rem, 1.8vw, 0.85rem);
+            color: #fbbf24;
+            height: 1.4rem;
+            font-weight: 600;
+            margin-top: 2px;
+            min-height: 20px;
+        }
+
+        /* ===== BOTÕES MANUAIS (discretos) ===== */
+        .controles-manuais {
+            display: flex;
+            gap: 4px;
+            margin-top: 2px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-manual {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #cbd5e1;
+            width: clamp(32px, 6vw, 44px);
+            height: clamp(32px, 6vw, 44px);
+            border-radius: 50%;
+            font-size: clamp(1rem, 2.5vw, 1.4rem);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: manipulation;
+            backdrop-filter: blur(4px);
+        }
+
+        .btn-manual:active {
+            transform: scale(0.85);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-manual.menos {
+            color: #f87171;
+            border-color: rgba(248, 113, 113, 0.3);
+        }
+
+        .btn-manual.mais {
+            color: #4ade80;
+            border-color: rgba(74, 222, 128, 0.3);
+        }
+
+        .btn-manual:disabled {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        /* ===== STATUS ===== */
+        .status {
+            text-align: center;
+            font-size: clamp(0.7rem, 1.8vw, 0.9rem);
+            color: #cbd5e1;
+            min-height: 1.8rem;
+            padding: 2px 8px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            margin: 2px 0;
+        }
+
+        .status .indicador {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .status .indicador.ativo {
+            background: #22c55e;
+            animation: pisca 1s infinite;
+        }
+
+        .status .indicador.inativo {
+            background: #64748b;
+        }
+
+        .status .indicador.erro {
+            background: #ef4444;
+            animation: pisca 0.5s infinite;
+        }
+
+        @keyframes pisca {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.2;
+            }
+        }
+
+        /* ===== BOTÕES PRINCIPAIS ===== */
+        .botoes {
+            display: flex;
+            justify-content: center;
+            gap: clamp(6px, 2vw, 12px);
+            padding: 4px 0;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+        }
+
+        .botoes button {
+            padding: clamp(8px, 2vh, 12px) clamp(14px, 4vw, 24px);
+            font-size: clamp(0.7rem, 1.8vw, 0.95rem);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.15s;
+            touch-action: manipulation;
+            white-space: nowrap;
+            min-height: 44px;
+        }
+
+        .botoes button:active {
+            transform: scale(0.92);
+        }
+
+        #btnVoz {
+            background: #22c55e;
+            color: white;
+            min-width: 160px;
+        }
+
+        #btnVoz.parando {
+            background: #ef4444;
+            animation: pulse-vermelho 1s infinite;
+        }
+
+        @keyframes pulse-vermelho {
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 20px 5px rgba(239, 68, 68, 0.2);
+            }
+        }
+
+        #btnNovo {
+            background: #3b82f6;
+            color: white;
+        }
+
+        #btnZerar {
+            background: #6366f1;
+            color: white;
+        }
+
+        .botoes button:disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        /* ===== RESPONSIVIDADE ===== */
+        @media (max-width: 480px) {
+            .time .pontos {
+                min-width: 80px;
+                min-height: 70px;
+                padding: 2px 12px;
+            }
+            .topo {
+                padding: 0 4px;
+                font-size: 0.65rem;
+            }
+            .botoes button {
+                min-height: 38px;
+                padding: 6px 12px;
+                font-size: 0.7rem;
+            }
+            #btnVoz {
+                min-width: 120px;
+            }
+        }
+
+        @media (orientation: portrait) {
+            body {
+                padding: 8px;
+            }
+            .placares {
+                flex-direction: column;
+                justify-content: center;
+                gap: 8px;
+            }
+            .time {
+                width: 80%;
+            }
+            .time .pontos {
+                font-size: clamp(4rem, 20vw, 8rem);
+                min-height: 70px;
+            }
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOPO -->
+    <div class="topo">
+        <span>DAVID: <span class="vit-num" id="vitD">0</span> vitórias</span>
+        <span class="topo-titulo">⚡ JUDITE ⚡</span>
+        <span>LALIN: <span class="vit-num" id="vitL">0</span> vitórias</span>
+    </div>
+
+    <!-- PLACAR -->
+    <div class="placares">
+        <div class="time">
+            <div class="nome">DAVID</div>
+            <div class="pontos" id="ptsD">0</div>
+            <div class="vantagem" id="tagD"></div>
+            <div class="controles-manuais">
+                <button class="btn-manual menos" data-time="D" data-delta="-1" aria-label="David menos um">−</button>
+                <button class="btn-manual mais" data-time="D" data-delta="1" aria-label="David mais um">+</button>
+            </div>
+        </div>
+        <div class="time">
+            <div class="nome">LALIN</div>
+            <div class="pontos" id="ptsL">0</div>
+            <div class="vantagem" id="tagL"></div>
+            <div class="controles-manuais">
+                <button class="btn-manual menos" data-time="L" data-delta="-1" aria-label="Lalin menos um">−</button>
+                <button class="btn-manual mais" data-time="L" data-delta="1" aria-label="Lalin mais um">+</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- STATUS -->
+    <div class="status" id="status">
+        <span class="indicador inativo" id="indicadorStatus"></span>
+        <span id="statusTexto">Toque em COMEÇAR e fale: Judite ponto David / Judite ponto Lalin</span>
+    </div>
+
+    <!-- BOTÕES -->
+    <div class="botoes">
+        <button id="btnVoz">🎙️ COMEÇAR</button>
+        <button id="btnNovo">🔄 NOVO JOGO</button>
+        <button id="btnZerar">♻️ ZERAR TUDO</button>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ============================================
+            // CONFIGURAÇÕES
+            // ============================================
+            const CONFIG = {
+                PALAVRA_ATIVADORA: 'judite',
+                PONTOS_VITORIA: 15,
+                TIMEOUT_RECONHECIMENTO: 300,
+                MAX_TENTATIVAS_RECONHECIMENTO: 3,
+            };
+
+            // ============================================
+            // ESTADO DO JOGO
+            // ============================================
+            const estado = {
+                pontos: { D: 0, L: 0 },
+                vitorias: { D: 0, L: 0 },
+                vantagem: { D: 0, L: 0 },
+                modoVantagem: false,
+                jogoEncerrado: false,
+                ouvindo: false,
+                tentativasReconhecimento: 0,
+            };
+
+            // ============================================
+            // ELEMENTOS DOM
+            // ============================================
+            const DOM = {
+                ptsD: document.getElementById('ptsD'),
+                ptsL: document.getElementById('ptsL'),
+                vitD: document.getElementById('vitD'),
+                vitL: document.getElementById('vitL'),
+                tagD: document.getElementById('tagD'),
+                tagL: document.getElementById('tagL'),
+                statusTexto: document.getElementById('statusTexto'),
+                indicadorStatus: document.getElementById('indicadorStatus'),
+                btnVoz: document.getElementById('btnVoz'),
+                btnNovo: document.getElementById('btnNovo'),
+                btnZerar: document.getElementById('btnZerar'),
+                botoesManuais: document.querySelectorAll('.btn-manual'),
+            };
+
+            // ============================================
+            // RECONHECIMENTO DE VOZ
+            // ============================================
+            let reconhecimento = null;
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+            // ============================================
+            // FUNÇÕES DE UI
+            // ============================================
+            function atualizarTela() {
+                const ptsExibidos = estado.modoVantagem ? estado.vantagem : estado.pontos;
+                DOM.ptsD.textContent = ptsExibidos.D;
+                DOM.ptsL.textContent = ptsExibidos.L;
+                DOM.vitD.textContent = estado.vitorias.D;
+                DOM.vitL.textContent = estado.vitorias.L;
+                DOM.tagD.textContent = estado.modoVantagem ? '⚡ Vantagem' : '';
+                DOM.tagL.textContent = estado.modoVantagem ? '⚡ Vantagem' : '';
+            }
+
+            function setStatus(mensagem, tipo = 'info') {
+                DOM.statusTexto.textContent = mensagem;
+                const indicador = DOM.indicadorStatus;
+                indicador.className = 'indicador';
+                if (tipo === 'ativo') {
+                    indicador.classList.add('ativo');
+                } else if (tipo === 'erro') {
+                    indicador.classList.add('erro');
+                } else {
+                    indicador.classList.add('inativo');
+                }
+            }
+
+            function toggleGanhador(time) {
+                const el = time === 'D' ? DOM.ptsD : DOM.ptsL;
+                if (estado.jogoEncerrado) {
+                    el.classList.add('ganhador');
+                } else {
+                    el.classList.remove('ganhador');
+                }
+            }
+
+            function atualizarBotoesManuais() {
+                DOM.botoesManuais.forEach(btn => {
+                    const time = btn.dataset.time;
+                    const delta = parseInt(btn.dataset.delta);
+                    const ptsAtuais = estado.modoVantagem ? estado.vantagem[time] : estado.pontos[time];
+                    const ptsAdv = estado.modoVantagem ? estado.vantagem[time === 'D' ? 'L' : 'D'] : estado.pontos[time ===
+                        'D' ? 'L' : 'D'];
+
+                    // Desabilitar se jogo encerrado ou ponto inválido
+                    btn.disabled = estado.jogoEncerrado ||
+                        (delta === -1 && ptsAtuais <= 0) ||
+                        (delta === 1 && estado.modoVantagem && ptsAtuais >= 2 && Math.abs(ptsAtuais - ptsAdv) >= 2);
+                });
+            }
+
+            // ============================================
+            // LÓGICA DO JOGO
+            // ============================================
+            function somarPonto(time) {
+                if (estado.jogoEncerrado) {
+                    setStatus('🏆 Jogo encerrado! Clique em NOVO JOGO', 'erro');
+                    return false;
+                }
+
+                if (estado.modoVantagem) {
+                    estado.vantagem[time]++;
+
+                    // Verifica se alguém ganhou na vantagem (diferença de 2)
+                    const diff = Math.abs(estado.vantagem.D - estado.vantagem.L);
+                    if (diff >= 2 && (estado.vantagem.D >= 2 || estado.vantagem.L >= 2)) {
+                        encerrarJogo(time);
+                        return true;
+                    }
+
+                    // Se empatou em 1x1, zera a vantagem
+                    if (estado.vantagem.D === 1 && estado.vantagem.L === 1) {
+                        estado.vantagem.D = 0;
+                        estado.vantagem.L = 0;
+                        setStatus('⚖️ Empate na vantagem! Zera...', 'info');
+                    }
+                } else {
+                    estado.pontos[time]++;
+
+                    // Verifica se atingiu 15 com diferença de 2
+                    if ((estado.pontos.D >= CONFIG.PONTOS_VITORIA || estado.pontos.L >= CONFIG.PONTOS_VITORIA) &&
+                        Math.abs(estado.pontos.D - estado.pontos.L) >= 2) {
+                        encerrarJogo(time);
+                        return true;
+                    }
+
+                    // Entra em modo vantagem se 14x14
+                    if (estado.pontos.D === 14 && estado.pontos.L === 14) {
+                        estado.modoVantagem = true;
+                        estado.vantagem.D = 0;
+                        estado.vantagem.L = 0;
+                        setStatus('⚖️ 14x14! Modo vantagem ativado!', 'info');
+                    }
+                }
+
+                atualizarTela();
+                atualizarBotoesManuais();
+                return true;
+            }
+
+            function corrigirPonto(time) {
+                if (estado.jogoEncerrado) {
+                    setStatus('🏆 Jogo encerrado! Não é possível corrigir', 'erro');
+                    return;
+                }
+
+                if (estado.modoVantagem) {
+                    if (estado.vantagem[time] > 0) {
+                        estado.vantagem[time]--;
+                        setStatus(`✏️ Corrigido: -1 ponto para ${time === 'D' ? 'David' : 'Lalin'} (vantagem)`, 'info');
+                    } else {
+                        setStatus(`⚠️ Não há pontos para corrigir em ${time === 'D' ? 'David' : 'Lalin'}`, 'erro');
+                        return;
+                    }
+                } else {
+                    if (estado.pontos[time] > 0) {
+                        estado.pontos[time]--;
+                        setStatus(`✏️ Corrigido: -1 ponto para ${time === 'D' ? 'David' : 'Lalin'}`, 'info');
+                    } else {
+                        setStatus(`⚠️ Não há pontos para corrigir em ${time === 'D' ? 'David' : 'Lalin'}`, 'erro');
+                        return;
+                    }
+                }
+
+                atualizarTela();
+                atualizarBotoesManuais();
+            }
+
+            function encerrarJogo(time) {
+                estado.jogoEncerrado = true;
+                estado.vitorias[time]++;
+                const nome = time === 'D' ? 'DAVID' : 'LALIN';
+                setStatus(`🏆 JOGO ENCERRADO! ${nome} VENCEU!`, 'info');
+                toggleGanhador(time);
+                atualizarTela();
+                atualizarBotoesManuais();
+                pararEscuta();
+            }
+
+            function resetarJogo() {
+                estado.pontos = { D: 0, L: 0 };
+                estado.vantagem = { D: 0, L: 0 };
+                estado.modoVantagem = false;
+                estado.jogoEncerrado = false;
+                estado.tentativasReconhecimento = 0;
+
+                DOM.ptsD.classList.remove('ganhador');
+                DOM.ptsL.classList.remove('ganhador');
+
+                setStatus('🔄 Novo jogo! Continue ouvindo...', 'info');
+                atualizarTela();
+                atualizarBotoesManuais();
+
+                // Reinicia escuta se estava ativa
+                if (estado.ouvindo && reconhecimento) {
+                    try {
+                        reconhecimento.stop();
+                        setTimeout(() => reconhecimento.start(), 100);
+                    } catch (e) {
+                        console.warn('Erro ao reiniciar escuta:', e);
+                    }
+                }
+            }
+
+            function resetarTudo() {
+                estado.pontos = { D: 0, L: 0 };
+                estado.vantagem = { D: 0, L: 0 };
+                estado.vitorias = { D: 0, L: 0 };
+                estado.modoVantagem = false;
+                estado.jogoEncerrado = false;
+                estado.tentativasReconhecimento = 0;
+
+                DOM.ptsD.classList.remove('ganhador');
+                DOM.ptsL.classList.remove('ganhador');
+
+                setStatus('♻️ Tudo zerado! Recomece do início', 'info');
+                atualizarTela();
+                atualizarBotoesManuais();
+
+                // Reinicia escuta se estava ativa
+                if (estado.ouvindo && reconhecimento) {
+                    try {
+                        reconhecimento.stop();
+                        setTimeout(() => reconhecimento.start(), 100);
+                    } catch (e) {
+                        console.warn('Erro ao reiniciar escuta:', e);
+                    }
+                }
+            }
+
+            // ============================================
+            // COMANDOS DE VOZ
+            // ============================================
+            function processarComandoVoz(texto) {
+                if (estado.jogoEncerrado) {
+                    setStatus('🏆 Jogo encerrado! Clique em NOVO JOGO', 'erro');
+                    return;
+                }
+
+                const fala = texto.toLowerCase().trim();
+                console.log('[VOZ] Comando recebido:', fala);
+
+                // Verifica palavra ativadora
+                if (!fala.includes(CONFIG.PALAVRA_ATIVADORA)) {
+                    setStatus('🔇 Aguardando palavra "Judite"...', 'info');
+                    return;
+                }
+
+                // COMANDO: CORRIGIR
+                if (fala.includes('corrigir')) {
+                    if (fala.includes('david')) {
+                        corrigirPonto('D');
+                    } else if (fala.includes('lalin')) {
+                        corrigirPonto('L');
+                    } else {
+                        setStatus('⚠️ Corrigir: especifique David ou Lalin', 'erro');
+                    }
+                    return;
+                }
+
+                // COMANDO: RESET (NOVO JOGO)
+                if (fala.includes('novo') || fala.includes('reset') || fala.includes('reiniciar')) {
+                    resetarJogo();
+                    setStatus('🔄 Novo jogo iniciado por voz!', 'info');
+                    return;
+                }
+
+                // COMANDO: ZERAR TUDO
+                if (fala.includes('zerar tudo') || fala.includes('zerartudo')) {
+                    resetarTudo();
+                    setStatus('♻️ Zerado tudo por voz!', 'info');
+                    return;
+                }
+
+                // COMANDO: PONTOS
+                if (fala.includes('david') && !fala.includes('corrigir')) {
+                    somarPonto('D');
+                    setStatus('✅ Ponto para DAVID!', 'info');
+                } else if (fala.includes('lalin') && !fala.includes('corrigir')) {
+                    somarPonto('L');
+                    setStatus('✅ Ponto para LALIN!', 'info');
+                } else {
+                    setStatus('⚠️ Comando não reconhecido. Fale: Judite ponto David/Lalin', 'erro');
+                }
+            }
+
+            // ============================================
+            // CONTROLE DE VOZ
+            // ============================================
+            function iniciarEscuta() {
+                if (!SpeechRecognition) {
+                    setStatus('❌ Reconhecimento de voz não suportado. Use Google Chrome.', 'erro');
+                    return;
+                }
+
+                if (estado.ouvindo) {
+                    return;
+                }
+
+                try {
+                    if (!reconhecimento) {
+                        criarReconhecimento();
+                    }
+                    reconhecimento.start();
+                    estado.ouvindo = true;
+                    DOM.btnVoz.textContent = '🔇 PARAR';
+                    DOM.btnVoz.classList.add('parando');
+                    setStatus('👂 Ouvindo... Fale: Judite ponto David/Lalin', 'ativo');
+                } catch (e) {
+                    console.error('Erro ao iniciar escuta:', e);
+                    setStatus('⚠️ Erro ao iniciar microfone. Tente novamente.', 'erro');
+                    estado.ouvindo = false;
+                    DOM.btnVoz.textContent = '🎙️ COMEÇAR';
+                    DOM.btnVoz.classList.remove('parando');
+                }
+            }
+
+            function pararEscuta() {
+                if (!estado.ouvindo || !reconhecimento) return;
+
+                try {
+                    reconhecimento.stop();
+                } catch (e) {
+                    console.warn('Erro ao parar escuta:', e);
+                }
+
+                estado.ouvindo = false;
+                DOM.btnVoz.textContent = '🎙️ COMEÇAR';
+                DOM.btnVoz.classList.remove('parando');
+                setStatus('⏹️ Microfone desativado', 'inativo');
+            }
+
+            function toggleEscuta() {
+                if (estado.ouvindo) {
+                    pararEscuta();
+                } else {
+                    iniciarEscuta();
+                }
+            }
+
+            function criarReconhecimento() {
+                if (!SpeechRecognition) return;
+
+                reconhecimento = new SpeechRecognition();
+                reconhecimento.lang = 'pt-BR';
+                reconhecimento.continuous = true;
+                reconhecimento.interimResults = false;
+                reconhecimento.maxAlternatives = 1;
+
+                reconhecimento.onstart = () => {
+                    estado.ouvindo = true;
+                    estado.tentativasReconhecimento = 0;
+                    DOM.btnVoz.textContent = '🔇 PARAR';
+                    DOM.btnVoz.classList.add('parando');
+                    setStatus('👂 Ouvindo... Fale: Judite ponto David/Lalin', 'ativo');
+                };
+
+                reconhecimento.onresult = (event) => {
+                    const resultado = event.results[event.results.length - 1];
+                    if (resultado && resultado.isFinal) {
+                        const fala = resultado[0].transcript;
+                        processarComandoVoz(fala);
+                    }
+                };
+
+                reconhecimento.onerror = (event) => {
+                    console.warn('[VOZ] Erro:', event.error);
+
+                    // Erros que não devem reiniciar
+                    if (event.error === 'not-allowed' || event.error === 'denied') {
+                        setStatus('❌ Acesso ao microfone negado. Permita na configuração do navegador.', 'erro');
+                        pararEscuta();
+                        return;
+                    }
+
+                    if (event.error === 'no-speech') {
+                        setStatus('🔇 Nenhuma fala detectada. Tente novamente.', 'info');
+                        return;
+                    }
+
+                    // Tentar reiniciar para outros erros
+                    if (estado.ouvindo && !estado.jogoEncerrado) {
+                        estado.tentativasReconhecimento++;
+                        if (estado.tentativasReconhecimento > CONFIG.MAX_TENTATIVAS_RECONHECIMENTO) {
+                            setStatus('⚠️ Muitas falhas. Clique em COMEÇAR para tentar novamente.', 'erro');
+                            pararEscuta();
+                            return;
+                        }
+                        setTimeout(() => {
+                            if (estado.ouvindo) {
+                                try {
+                                    reconhecimento.start();
+                                } catch (e) {
+                                    console.warn('Erro ao reiniciar:', e);
+                                }
+                            }
+                        }, CONFIG.TIMEOUT_RECONHECIMENTO);
+                    }
+                };
+
+                reconhecimento.onend = () => {
+                    // Se ainda deve estar ouvindo, reinicia
+                    if (estado.ouvindo && !estado.jogoEncerrado) {
+                        setTimeout(() => {
+                            if (estado.ouvindo) {
+                                try {
+                                    reconhecimento.start();
+                                } catch (e) {
+                                    console.warn('Erro ao reiniciar no onend:', e);
+                                }
+                            }
+                        }, CONFIG.TIMEOUT_RECONHECIMENTO);
+                    } else if (!estado.ouvindo) {
+                        DOM.btnVoz.textContent = '🎙️ COMEÇAR';
+                        DOM.btnVoz.classList.remove('parando');
+                        setStatus('⏹️ Microfone desativado', 'inativo');
+                    }
+                };
+            }
+
+            // ============================================
+            // EVENTOS
+            // ============================================
+
+            // Botão de voz
+            DOM.btnVoz.addEventListener('click', toggleEscuta);
+
+            // Botão NOVO JOGO
+            DOM.btnNovo.addEventListener('click', resetarJogo);
+
+            // Botão ZERAR TUDO
+            DOM.btnZerar.addEventListener('click', resetarTudo);
+
+            // Botões manuais (+ e -)
+            DOM.botoesManuais.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const time = this.dataset.time;
+                    const delta = parseInt(this.dataset.delta);
+
+                    if (estado.jogoEncerrado) {
+                        setStatus('🏆 Jogo encerrado! Clique em NOVO JOGO', 'erro');
+                        return;
+                    }
+
+                    if (delta === 1) {
+                        somarPonto(time);
+                    } else if (delta === -1) {
+                        corrigirPonto(time);
+                    }
+                });
+
+                // Touch feedback
+                btn.addEventListener('touchstart', function() {
+                    this.style.transform = 'scale(0.85)';
+                }, { passive: true });
+
+                btn.addEventListener('touchend', function() {
+                    this.style.transform = 'scale(1)';
+                }, { passive: true });
+            });
+
+            // ============================================
+            // INICIALIZAÇÃO
+            // ============================================
+            function init() {
+                if (!SpeechRecognition) {
+                    setStatus('❌ Use Google Chrome para reconhecimento de voz', 'erro');
+                    DOM.btnVoz.disabled = true;
+                } else {
+                    criarReconhecimento();
+                    setStatus('🎯 Pronto! Toque em COMEÇAR para ativar o microfone', 'inativo');
+                }
+
+                atualizarTela();
+                atualizarBotoesManuais();
+
+                // Previne rolagem em dispositivos móveis
+                document.addEventListener('touchmove', function(e) {
+                    if (e.target.closest('.botoes') || e.target.closest('.controles-manuais')) {
+                        e.preventDefault();
+                    }
+                }, { passive: false });
+            }
+
+            // Inicializa quando DOM estiver pronto
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+            // ============================================
+            // EXPORTA PARA DEBUG
+            // ============================================
+            window.__placar = {
+                estado: estado,
+                resetarJogo: resetarJogo,
+                resetarTudo: resetarTudo,
+                somarPonto: somarPonto,
+                corrigirPonto: corrigirPonto,
+            };
+
+        })();
+    </script>
+
+</body>
+</html>
